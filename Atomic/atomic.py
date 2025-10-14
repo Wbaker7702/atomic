@@ -1,7 +1,7 @@
 import os
 import sys
 import json
-import pipes
+import subprocess
 from .client import AtomicDocker
 from .syscontainers import SystemContainers
 
@@ -35,7 +35,7 @@ find_repo_tag.images = None
 
 class Atomic(object):
     results = '/var/lib/atomic'
-    skull = (u"\u2620").encode('utf-8')
+    skull = ("\u2620").encode('utf-8')
 
     def __init__(self):
         self.d = AtomicDocker()
@@ -236,7 +236,7 @@ class Atomic(object):
             newenv['PWD'] = os.getcwd()
 
         default_uid = "0"
-        with open("/proc/self/loginuid") as f:
+        with open("/proc/self/loginuid", encoding='utf-8') as f:
             val = f.readline()
             if int(val) <= 2147483647:
                 default_uid = val
@@ -375,8 +375,8 @@ class Atomic(object):
         '''
         try:
             self.d.ping()
-        except requests.exceptions.ConnectionError:
-            raise NoDockerDaemon()
+        except requests.exceptions.ConnectionError as exc:
+            raise NoDockerDaemon() from exc
 
     def _is_container(self, identifier, active=False):
         '''
@@ -391,6 +391,7 @@ class Atomic(object):
             cons = active_cons
         else:
             cons = self.get_containers()
+            active_con_ids = []  # Initialize empty list for inactive case
 
         # First check if the container exists by whatever
         # identifier was given
@@ -497,8 +498,8 @@ class Atomic(object):
             for i in images:
                 i["ImageType"] = "Docker"
                 i["ImageId"] = i["Id"]
-        except requests.exceptions.ConnectionError:
-            raise NoDockerDaemon()
+        except requests.exceptions.ConnectionError as exc:
+            raise NoDockerDaemon() from exc
         return images
 
     def get_images(self, get_all=False):
@@ -544,7 +545,7 @@ class Atomic(object):
         Read and parse the /var/lib/atomic/scan_summary.json object.
         """
         try:
-            return json.loads(open(os.path.join(self.results, "scan_summary.json"), "r").read())
+            return json.loads(open(os.path.join(self.results, "scan_summary.json"), "r", encoding='utf-8').read())
         except (IOError, ValueError):
             return {}
 
@@ -556,7 +557,7 @@ class Atomic(object):
         :return:
         """
         try:
-            summary_results = json.loads(open(os.path.join(self.results, "scan_summary.json"), "r").read())
+            summary_results = json.loads(open(os.path.join(self.results, "scan_summary.json"), "r", encoding='utf-8').read())
             vuln_ids = []
 
             for uuid in summary_results.keys():
@@ -578,7 +579,7 @@ class Atomic(object):
         token_file_name = os.path.expanduser('~/.docker/config.json')
         if not os.path.exists(token_file_name):
             return {}
-        with open(token_file_name) as token_file:
+        with open(token_file_name, encoding='utf-8') as token_file:
             token_data = json.load(token_file)
         try:
             for registry in token_data['auths']:

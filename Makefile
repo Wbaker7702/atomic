@@ -2,7 +2,7 @@
 PREFIX ?= $(DESTDIR)/usr
 SYSCONFDIR ?= $(DESTDIR)/etc/sysconfig
 PROFILEDIR ?= $(DESTDIR)/etc/profile.d
-export PYTHON ?= /usr/bin/python
+export PYTHON ?= /usr/bin/python3
 export PYTHON3 ?= /usr/bin/python3
 PYLINT ?= $(PYTHON) -m pylint
 PYTHON3_PYLINT ?= $(PYTHON3) -m pylint
@@ -18,7 +18,7 @@ all: python-build docs pylint-check gotar
 
 .PHONY: test-python3-pylint
 test-python3-pylint:
-	$(PYTHON3_PYLINT) --disable=all --enable=E --enable=W --additional-builtins=_ *.py atomic Atomic tests/unit/*.py -d=no-absolute-import,print-statement,no-absolute-import,bad-builtin,catching-non-exception,raising-non-exception
+	$(PYTHON3_PYLINT) --rcfile=.pylintrc *.py atomic Atomic tests/unit/*.py
 
 .PHONY: test check test-suite
 
@@ -38,7 +38,7 @@ python-build:
 
 .PHONY: pylint-check
 pylint-check:
-	$(PYLINT) --disable=all --enable=E --enable=W --additional-builtins=_ *.py atomic Atomic tests/unit/*.py -d=no-absolute-import,print-statement,no-absolute-import,bad-builtin,catching-non-exception,raising-non-exception
+	$(PYLINT) --rcfile=.pylintrc *.py atomic Atomic tests/unit/*.py
 
 MANPAGES_MD = $(wildcard docs/*.md)
 

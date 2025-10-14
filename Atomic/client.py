@@ -8,15 +8,19 @@ def get_docker_client():
     Universal method to use docker.client()
     """
     kwargs = {"version": "auto"}
-    kwargs.update(docker.utils.kwargs_from_env(assert_hostname=False))
+    try:
+        kwargs.update(docker.utils.kwargs_from_env(assert_hostname=False))
+    except TypeError:
+        # Newer versions of docker-py don't support assert_hostname
+        kwargs.update(docker.utils.kwargs_from_env())
     try:
         client = docker.APIClient #pylint: disable=no-member
     except AttributeError:
         client = docker.Client #pylint: disable=no-member
     try:
         return client(**kwargs)
-    except docker.errors.DockerException:
-        raise NoDockerDaemon()
+    except docker.errors.DockerException as exc:
+        raise NoDockerDaemon() from exc
 
 def check_if_python2():
     if int(sys.version_info[0]) < 3:

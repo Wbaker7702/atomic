@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: atomic
+Version: 1.22.1
+Author: Daniel Walsh
+Author-email: dwalsh@redhat.com
+License-File: LICENSE
+License-File: COPYING
+Dynamic: author
+Dynamic: author-email
+Dynamic: license-file

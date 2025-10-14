@@ -323,7 +323,7 @@ class SystemContainers(object):
                 return None
             img = self.inspect_system_image(image)
             if installed_files is None:
-                with open(os.path.join(rootfs, "info"), "r") as info_file:
+                with open(os.path.join(rootfs, "info"), "r", encoding='utf-8') as info_file:
                     info = json.loads(info_file.read())
                     installed_files = info["installed-files"] if "installed-files" in info else None
 
@@ -351,7 +351,7 @@ class SystemContainers(object):
         :returns: info object, rpm_installed field value, installed_files_checksum field value
         :rtype: tuple(dict, mixed, dict)
         """
-        with open(os.path.join(checkout, name, "info"), "r") as info_file:
+        with open(os.path.join(checkout, name, "info"), "r", encoding='utf-8') as info_file:
             info = json.loads(info_file.read())
             rpm_installed = info["rpm-installed"] if "rpm-installed" in info else None
             installed_files_checksum = info["installed-files-checksum"] if "installed-files-checksum" in info else None
@@ -401,13 +401,13 @@ class SystemContainers(object):
         :raises: ValueError, OSError
         """
         destination_path = os.path.join(destination, "config.json")
-        with open(destination_path, 'r') as config_file:
+        with open(destination_path, 'r', encoding='utf-8') as config_file:
             try:
                 config = json.loads(config_file.read())
             except ValueError:
                 raise ValueError("Invalid config.json file in given remote location: {}.".format(destination_path))
             config['root']['path'] = remote_rootfs
-        with open(destination_path, 'w') as config_file:
+        with open(destination_path, 'w', encoding='utf-8') as config_file:
             config_file.write(json.dumps(config, indent=4))
         # create a symlink to the real rootfs, so that it is possible
         # to access the rootfs in the same way as in the not --remote case.
@@ -1687,9 +1687,9 @@ Warning: You may want to modify `%s` before starting the service""" % os.path.jo
             command = ""
             config_json = os.path.join(fullpath, "config.json")
             if os.path.exists(config_json):
-                with open(config_json, "r") as config_file:
+                with open(config_json, "r", encoding='utf-8') as config_file:
                     config = json.load(config_file)
-                    command = u' '.join(config["process"]["args"])
+                    command = ' '.join(config["process"]["args"])
 
             d = util.Decompose(image)
             if d.registry:

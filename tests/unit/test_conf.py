@@ -26,7 +26,7 @@ class TestAtomicUnit(unittest.TestCase):
         """
         Verifies atomic.conf is valid YAML.
         """
-        self.assertEquals(type(yaml.safe_load(self.conf)), dict)
+        self.assertEqual(type(yaml.safe_load(self.conf)), dict)
 
     def test_config_file_is_valid_yaml_with_items_uncommented(self):
         """
@@ -39,7 +39,7 @@ class TestAtomicUnit(unittest.TestCase):
             if line.startswith('#') and len(line) > 2 and line[1] != ' ':
                 line = line[1:]
             uncommented.append(line)
-        self.assertEquals(type(yaml.safe_load('\n'.join(uncommented))), dict)
+        self.assertEqual(type(yaml.safe_load('\n'.join(uncommented))), dict)
 
 
 if __name__ == '__main__':

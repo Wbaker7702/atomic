@@ -11,7 +11,7 @@ from fnmatch import fnmatch as matches
 import os
 import selinux
 from .client import AtomicDocker
-from yaml import load as yaml_load
+from yaml import load as yaml_load, SafeLoader
 from yaml import safe_load
 from yaml import YAMLError
 from yaml.scanner import ScannerError
@@ -342,7 +342,7 @@ def skopeo_inspect(image, args=None, return_json=True, newline=False):
         results = subp(cmd, newline=newline)
     except OSError:
         raise ValueError("skopeo must be installed to perform remote inspections")
-    if results.return_code is not 0:
+    if results.return_code != 0:
         error = SkopeoError(results.stderr.decode('utf-8').rstrip()).msg
         if error == "":
             error = results.stderr.decode('utf-8').rstrip()
@@ -369,7 +369,7 @@ def skopeo_delete(image, args=None):
         results = subp(cmd)
     except OSError:
         raise ValueError("skopeo must be installed to perform remote operations")
-    if results.return_code is not 0:
+    if results.return_code != 0:
         raise ValueError(results)
     else:
         return True
@@ -466,7 +466,7 @@ def get_atomic_config(atomic_config=None):
     if not os.path.exists(atomic_config):
         raise ValueError("{} does not exist".format(atomic_config))
     with open(atomic_config, 'r') as conf_file:
-        return yaml_load(conf_file)
+        return yaml_load(conf_file, Loader=SafeLoader)
 
 def add_opt(sub):
     sub.add_argument("--opt1", dest="opt1",help=argparse.SUPPRESS)
@@ -511,7 +511,7 @@ def get_scanners():
     for f in files:
         with open(f, 'r') as conf_file:
             try:
-                temp_conf = yaml_load(conf_file)
+                temp_conf = yaml_load(conf_file, Loader=SafeLoader)
                 if temp_conf.get('type') == "scanner":
                     scanners.append(temp_conf)
             except YAMLError:
@@ -772,7 +772,7 @@ def strip_port(_input):
     return ip.strip("[]")
 
 def is_insecure_registry(registry_config, registry):
-    if registry is "":
+    if registry == "":
         raise ValueError("Registry value cannot be blank")
     if is_python2 and not isinstance(registry, unicode): #pylint: disable=undefined-variable,unicode-builtin
         registry = unicode(registry) #pylint: disable=unicode-builtin,undefined-variable

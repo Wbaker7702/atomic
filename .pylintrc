@@ -1,0 +1,58 @@
+[MASTER]
+# Use multiple processes to speed up Pylint
+jobs=1
+
+[MESSAGES CONTROL]
+# Disable specific warnings
+disable=
+    # Deprecated options that are no longer valid
+    useless-option-value,
+    unknown-option-value,
+    # Python 2 compatibility issues
+    raw_input-builtin,
+    input-builtin,
+    unicode-builtin,
+    round-builtin,
+    old-division,
+    map-builtin-not-iterating,
+    next-method-called,
+    # Other issues
+    relative-import,
+    deprecated-lambda,
+    bad-builtin,
+    catching-non-exception,
+    raising-non-exception,
+    no-absolute-import,
+    print-statement
+
+[FORMAT]
+# Maximum number of characters on a single line
+max-line-length=120
+
+[VARIABLES]
+# List of additional names supposed to be defined in builtins
+additional-builtins=_
+
+[DESIGN]
+# Maximum number of arguments for function / method
+max-args=10
+
+# Maximum number of locals for function / method body
+max-locals=20
+
+# Maximum number of return / yield for function / method body
+max-returns=6
+
+# Maximum number of branch for function / method body
+max-branches=15
+
+# Maximum number of statements in function / method body
+max-statements=60
+
+[IMPORTS]
+# Deprecated modules which should not be used, separated by a comma
+deprecated-modules=pipes
+
+[EXCEPTIONS]
+# Exceptions that will emit a warning when being caught
+overgeneral-exceptions=Exception
