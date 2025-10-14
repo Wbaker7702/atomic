@@ -1,4 +1,4 @@
-#!/usr/bin/python -Es
+#!/usr/bin/python3 -Es
 # Copyright (C) 2014-2015 Red Hat
 # AUTHOR: Dan Walsh <dwalsh@redhat.com>
 # see file 'COPYING' for use and warranty information
@@ -68,8 +68,12 @@ try:
     # pylint: disable=unexpected-keyword-arg
     gettext.install(PROGNAME, unicode=True, codeset='utf-8')
 except TypeError:
-    # Failover to python3 install
-    gettext.install(PROGNAME, codeset='utf-8')
+    try:
+        # Failover to python3 install
+        gettext.install(PROGNAME, codeset='utf-8')
+    except TypeError:
+        # Python 3.8+ doesn't support codeset parameter
+        gettext.install(PROGNAME)
 except IOError:
     import builtins # pylint: disable=import-error
     builtins.__dict__['_'] = str

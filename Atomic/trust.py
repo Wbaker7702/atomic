@@ -131,7 +131,7 @@ class Trust(Atomic):
 
         util.is_valid_image_uri(registry)
         mode = "r+" if os.path.exists(self.policy_filename) else "w+"
-        with open(self.policy_filename, mode) as policy_file:
+        with open(self.policy_filename, mode, encoding='utf-8') as policy_file:
             if mode == "r+":
                 _policy_json = "".join(policy_file.readlines())
                 policy = self.check_policy(json.loads(_policy_json), sstype)
@@ -176,13 +176,13 @@ class Trust(Atomic):
         Remove trust policy entry and sigstore
         """
         sstype = self.get_sigstore_type_map(self.args.sigstoretype)
-        with open(self.policy_filename, 'r+') as policy_file:
+        with open(self.policy_filename, 'r+', encoding='utf-8') as policy_file:
             policy = json.load(policy_file)
             try:
                 del policy["transports"][sstype][self.args.registry]
-            except KeyError:
+            except KeyError as exc:
                 raise ValueError("Could not find trust policy defined for %s transport %s" %
-                              (self.args.sigstoretype, self.args.registry))
+                              (self.args.sigstoretype, self.args.registry)) from exc
             policy_file.seek(0)
             json.dump(policy, policy_file, indent=4)
             policy_file.truncate()
@@ -194,7 +194,7 @@ class Trust(Atomic):
         Modify global trust policy default
         """
         mode = "r+" if os.path.exists(self.policy_filename) else "w+"
-        with open(self.policy_filename, mode) as policy_file:
+        with open(self.policy_filename, mode, encoding='utf-8') as policy_file:
             if mode == "r+":
                 policy = json.load(policy_file)
             else:
@@ -238,7 +238,7 @@ class Trust(Atomic):
                                      "'/etc/atomic.conf' to reference user's "
                                      "GPG keyring." % key_reference)
             else:
-                with open(key_reference, 'r') as f:
+                with open(key_reference, 'r', encoding='utf-8') as f:
                     keydata = f.read()
         else:
             if token.scheme != "https":
@@ -249,7 +249,7 @@ class Trust(Atomic):
             if self.args.debug:
                 util.write_out("Downloading key from %s" % key_reference)
             proxies = util.get_proxy()
-            r = requests.get(key_reference, proxies=proxies)
+            r = requests.get(key_reference, proxies=proxies, timeout=30)
             if r.status_code == 200:
                 keydata = r.content
             else:
@@ -298,8 +298,8 @@ class Trust(Atomic):
         :param sigstore: sigstore server. If None the sigstore section is deleted.
         :param mode: file open mode
         """
-        with open(reg_file, mode) as f:
-            d = yaml.load(f)
+        with open(reg_file, mode, encoding='utf-8') as f:
+            d = yaml.load(f, Loader=yaml.SafeLoader)
             if not sigstore:
                 if d:
                     del d[sstype][registry]
@@ -402,7 +402,7 @@ class Trust(Atomic):
     def _get_policy(self):
         policy = self.default_policy_file
         mode = "r+" if os.path.exists(self.policy_filename) else "w+"
-        with open(self.policy_filename, mode) as policy_file:
+        with open(self.policy_filename, mode, encoding='utf-8') as policy_file:
             if mode == "r+":
                 policy = json.load(policy_file)
             else:

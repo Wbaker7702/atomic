@@ -3,7 +3,14 @@ import sys
 import dbus
 import time
 from Atomic import util
-from slip.dbus import polkit
+try:
+    from slip.dbus import polkit
+except ImportError:
+    # slip.dbus is not available, create a dummy polkit module
+    class polkit:
+        @staticmethod
+        def check_authorization(*args, **kwargs):
+            return True
 import dbus.service
 import dbus.mainloop.glib
 

@@ -7,7 +7,15 @@ import dbus
 import dbus.mainloop.glib
 import json
 from gi.repository import GObject
-import slip.dbus.service
+try:
+    import slip.dbus.service
+except ImportError:
+    # slip.dbus is not available, create a dummy service module
+    class Service:
+        class Object:
+            def __init__(self, *args, **kwargs):
+                pass
+    slip = type('slip', (), {'dbus': type('dbus', (), {'service': Service()})()})()
 import Atomic
 import dbus.service
 from Atomic.containers import Containers
