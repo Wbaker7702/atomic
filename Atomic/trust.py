@@ -226,7 +226,7 @@ class Trust(Atomic):
         token = urlparse(key_reference)
         if not token.scheme or not token.netloc:
             if not os.path.exists(key_reference):
-                cmd = ["gpg2", "--armor", "--export", key_reference]
+                cmd = ["gpg", "--armor", "--export", key_reference]
                 stderr = None if self.args.debug else util.DEVNULL
                 keydata = util.check_output(cmd, stderr=stderr)
                 if not keydata:
@@ -459,7 +459,8 @@ class Trust(Atomic):
                 util.output_json(sorted_table)
             else:
                 for key, value in sorted_table.items():
-                    util.write_out('{0:<35} {1:<6} {2:<29} {3}'.format(key, self.trusttype_map(value["type"]), self.get_gpg_id(value["keys"]), value["sigstore"]))
+                    sigstore = value["sigstore"] if value["sigstore"] is not None else ""
+                    util.write_out('{0:<35} {1:<6} {2:<29} {3}'.format(key, self.trusttype_map(value["type"]), self.get_gpg_id(value["keys"]), sigstore))
 
     def reset(self):
         """
@@ -495,13 +496,13 @@ class Trust(Atomic):
         """
         if not keys:
             return ""
-        (keylist, tmpkey) = None, None
+        (keylist, tmpkey) = "", None
         for key in keys:
             if not os.path.exists(key):
                 with tempfile.NamedTemporaryFile(delete=False, dir="/run/") as tmpkey:
                     tmpkey.write(b64decode(key))
                 key = tmpkey.name
-            cmd = ["gpg2", "--with-colons", key]
+            cmd = ["gpg", "--with-colons", key]
             try:
                 stderr = None if self.args.debug else util.DEVNULL
                 results = util.check_output(cmd, stderr=stderr).decode('utf-8')
