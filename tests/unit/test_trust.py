@@ -62,9 +62,9 @@ class TestAtomicTrust(unittest.TestCase):
         testobj.atomic_config = util.get_atomic_config(atomic_config = os.path.join(FIXTURE_DIR, "atomic.conf"))
         testobj.modify_registry_config("docker.io", "docker", "https://sigstore.example.com/sigs")
         with open(os.path.join(FIXTURE_DIR, "configs/docker.io.yaml"), 'r') as f:
-            conf_expected = yaml.load(f)
+            conf_expected = yaml.safe_load(f)
         with open(os.path.join(FIXTURE_DIR, "etc/containers/registries.d/docker.io.yaml"), 'r') as f:
-            conf_modified = yaml.load(f)
+            conf_modified = yaml.safe_load(f)
         self.assertEqual(conf_expected, conf_modified)
 
     def test_update_registry_sigstore(self):
@@ -72,9 +72,9 @@ class TestAtomicTrust(unittest.TestCase):
         testobj.atomic_config = util.get_atomic_config(atomic_config = os.path.join(FIXTURE_DIR, "atomic.conf"))
         testobj.modify_registry_config("docker.io", "docker", "https://sigstore.example.com/update")
         with open(os.path.join(FIXTURE_DIR, "configs/docker.io.updated.yaml"), 'r') as f:
-            conf_expected = yaml.load(f)
+            conf_expected = yaml.safe_load(f)
         with open(os.path.join(FIXTURE_DIR, "etc/containers/registries.d/docker.io.yaml"), 'r') as f:
-            conf_modified = yaml.load(f)
+            conf_modified = yaml.safe_load(f)
         self.assertEqual(conf_expected, conf_modified)
 
     def test_add_repo_sigstore(self):
@@ -82,9 +82,9 @@ class TestAtomicTrust(unittest.TestCase):
         testobj.atomic_config = util.get_atomic_config(atomic_config = os.path.join(FIXTURE_DIR, "atomic.conf"))
         testobj.modify_registry_config("docker.io/repo", "docker", "https://sigstore.acme.com/sigs")
         with open(os.path.join(FIXTURE_DIR, "configs/docker.io-repo.yaml"), 'r') as f:
-            conf_expected = yaml.load(f)
+            conf_expected = yaml.safe_load(f)
         with open(os.path.join(FIXTURE_DIR, "etc/containers/registries.d/docker.io-repo.yaml"), 'r') as f:
-            conf_modified = yaml.load(f)
+            conf_modified = yaml.safe_load(f)
         self.assertEqual(conf_expected, conf_modified)
 
     @unittest.skipUnless(new_enough, "Requires 2.7.6 or newer")

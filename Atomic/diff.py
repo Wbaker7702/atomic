@@ -1,6 +1,16 @@
 import os
 import sys
-import rpm
+try:
+    import rpm
+except ImportError:
+    # If rpm module is missing or fails to load, create a mock for help/docs generation
+    # or handle gracefully where possible
+    class rpm_mock:
+        TransactionSet = object
+        _RPMVSF_NOSIGNATURES = 0
+        _RPMVSF_NODIGESTS = 0
+    rpm = rpm_mock()
+
 import tempfile
 from . import util
 from . import mount
